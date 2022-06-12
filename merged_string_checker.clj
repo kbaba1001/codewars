@@ -5,19 +5,29 @@
 (defn same-chars [string1 string2]
   (= (sort string1) (sort string2)))
 
+#_(defn correct-order [string p]
+    (->> (str/split p #"")
+         (str/join ".*")
+         (#(str ".*" % ".*"))
+         re-pattern
+         (#(re-find % string))
+         boolean))
+
 (defn correct-order [string p]
-  (->> (str/split p #"")
-       (str/join ".*")
-       (#(str ".*" % ".*"))
-       re-pattern
-       (#(re-find % string))
-       boolean))
+  (let [s (first string)
+        fp (first p)]
+    (cond
+      (nil? fp) true
+      (nil? s) false
+      (= s fp) (recur (next string) (next p))
+      :else (recur (next string) p))))
 
 (defn is-merge [string p1 p2]
   (and (same-chars string (str p1 p2))
        (correct-order string p1)
        (correct-order string p2)))
 
+(is-merge "codewars" "code" "wasr")
 (is-merge "Bananas from Bahamas" "Bahas" "Bananas from am")
 
 ;; -------------------
